@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Мой базовый сайт</title>
+</head>
+<body>
+<h1>Hello all!</h1>
+<label>Как дела {{ user }}???</label>
+{% for i in all_users %}
+    {% if i == 'Matt' %}
+        <li><label>Метт???</label></li>
+
+    {% elif i != 'Richard' %}
+        <li>{{i}}</li>
+    {% else %}
+        <p>Что это?</p>
+    {% endif %}
+{% endfor %}
+
+<a href="{{ url_for('register') }}">Регистрация!</a>
+
+</body>
+</html>
