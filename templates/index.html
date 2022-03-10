@@ -3,22 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>Мой базовый сайт</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-<h1>Hello all!</h1>
-<label>Как дела {{ user }}???</label>
-{% for i in all_users %}
-    {% if i == 'Matt' %}
-        <li><label>Метт???</label></li>
 
-    {% elif i != 'Richard' %}
-        <li>{{i}}</li>
-    {% else %}
-        <p>Что это?</p>
-    {% endif %}
+{% for category, msg in get_flashed_messages(True) %}
+    <p class="{{ category }}">{{ msg }}</p>
 {% endfor %}
 
-<a href="{{ url_for('register') }}">Регистрация!</a>
+<div class="form-auth">
+    <form method="post">
+        <label>Логин: </label><input type="text" name="username"><br>
+        <label>Пароль: </label><input type="password" name="password"><br>
+        <input type="submit" value="Зарегестрироваться">
+    </form>
+</div>
+
+
+
+
+<!--<h1>Hello all!</h1>-->
+<!--<label>Как дела {{ user }}???</label>-->
+<!--{% for i in all_users %}-->
+<!--    {% if i == 'Matt' %}-->
+<!--        <li><label>Метт???</label></li>-->
+
+<!--    {% elif i != 'Richard' %}-->
+<!--        <li>{{i}}</li>-->
+<!--    {% else %}-->
+<!--        <p>Что это?</p>-->
+<!--    {% endif %}-->
+<!--{% endfor %}-->
+
+<!--<a href="{{ url_for('register') }}">Регистрация!</a>-->
 
 </body>
 </html>

@@ -1,0 +1,19 @@
+label{
+    color: #00008B;
+    text-size: 120%;
+}
+
+.form-auth{
+    padding: 50px;
+    font-size: 150%;
+}
+
+.success{
+    padding: 20px;
+    background-color: greenyellow;
+}
+
+.error{
+    padding: 20px;
+    background-color: indianred;
+}
