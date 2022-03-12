@@ -1,11 +1,21 @@
+body{
+    background: -webkit-linear-gradient(90deg, #afd9f7,#459cf7);
+    background: linear-gradient(90deg, #afd9f7,#459cf7);
+}
+
 label{
     color: #00008B;
-    text-size: 120%;
 }
 
 .form-auth{
     padding: 50px;
+    padding-left: 46px;
     font-size: 150%;
+    border: 2px solid;
+    border-radius: 2%;
+    background-color: white;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    /*width: 23%;*/
 }
 
 .success{
@@ -16,4 +26,24 @@ label{
 .error{
     padding: 20px;
     background-color: indianred;
+}
+
+.text-auth{
+    padding-bottom: 15px;
+}
+
+.button-auth{
+    padding-top: 17px;
+}
+
+.row-auth{
+    padding-top: 96px;
+}
+
+.input-auth{
+    width: 45%;
+}
+
+#text-reg{
+    margin-top: 20px;
 }
