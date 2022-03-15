@@ -1,49 +1,90 @@
-body{
-    background: -webkit-linear-gradient(90deg, #afd9f7,#459cf7);
-    background: linear-gradient(90deg, #afd9f7,#459cf7);
+body {
+    background: -webkit-linear-gradient(90deg, #afd9f7, #459cf7);
+    background: linear-gradient(90deg, #afd9f7, #459cf7);
 }
 
-label{
+label {
     color: #00008B;
 }
 
-.form-auth{
+input[type~="text"], input[type~="password"], input[type~="email"], input[type~="select"], textarea
+{font-size: 100%;}
+
+input[type~="submit"], textarea
+{font-size: 90%;}
+
+.form-auth {
     padding: 50px;
     padding-left: 46px;
     font-size: 150%;
     border: 2px solid;
     border-radius: 2%;
     background-color: white;
-    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
     /*width: 23%;*/
 }
 
-.success{
+.success {
     padding: 20px;
     background-color: greenyellow;
 }
 
-.error{
+.error {
     padding: 20px;
     background-color: indianred;
 }
 
-.text-auth{
-    padding-bottom: 15px;
+.text-auth {
+    padding-bottom: 12px;
 }
 
-.button-auth{
+.button-auth {
     padding-top: 17px;
 }
 
-.row-auth{
+.row-auth {
     padding-top: 96px;
 }
 
-.input-auth{
-    width: 45%;
+.input-auth {
+    width: 65%;
 }
 
-#text-reg{
+.help-info {
+    font-size: 80%;
+}
+
+.warning{
+    font-size: 70%;
+    color: red;
+    display: none;
+}
+
+#text-reg {
     margin-top: 20px;
+}
+
+[data-tooltip] {
+    position: relative; /* Относительное позиционирование */
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip); /* Выводим текст */
+    position: absolute; /* Абсолютное позиционирование */
+    width: 300px; /* Ширина подсказки */
+    left: 0;
+    top: 0; /* Положение подсказки */
+    background: #3989c9; /* Синий цвет фона */
+    color: #fff; /* Цвет текста */
+    padding: 0.5em; /* Поля вокруг текста */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+    pointer-events: none; /* Подсказка */
+    opacity: 0; /* Подсказка невидима */
+    transition: 1s; /* Время появления подсказки */
+    font-size: 55%;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1; /* Показываем подсказку */
+    top: 2em; /* Положение подсказки */
 }
