@@ -11,7 +11,7 @@ input[type~="text"], input[type~="password"], input[type~="email"], input[type~=
 {font-size: 100%;}
 
 input[type~="submit"], textarea
-{font-size: 90%;}
+{font-size: 82%;}
 
 .form-auth {
     padding: 50px;
@@ -58,6 +58,10 @@ input[type~="submit"], textarea
     font-size: 70%;
     color: red;
     display: none;
+}
+
+.fixed-a{
+    text-decoration: none;
 }
 
 #text-reg {

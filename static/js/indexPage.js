@@ -20,7 +20,7 @@ function checkAcceptSendData() {
     let patronymic = document.getElementById('patronymic')
     let email = document.getElementById('email')
     let password = document.getElementById('password')
-    if (username.value.length < 3 || surname.value.length < 3 || password.value.length < 4 || (patronymic.value.length < 3 && patronymic.value.length !== 0)) {
+    if (username.value.length < 2 || surname.value.length < 2 || password.value.length < 4 || (patronymic.value.length < 3 && patronymic.value.length !== 0)) {
         accept = false
     } else if (password.value === '1234') {
         accept = false
@@ -37,7 +37,7 @@ function checkAcceptSendData() {
 
 function checkText(th, this_id) {
     let el = document.getElementById(this_id)
-    if (th.value.length < 3 && !(this_id === 'patronymic_warning' && th.value.length === 0)) {
+    if (th.value.length < 2 && !(this_id === 'patronymic_warning' && th.value.length === 0) || (this_id === 'password_warning' && th.value.length < 4)) {
         el.style = 'display: inline;'
     } else if (this_id === 'password_warning' && th.value === '1234') {
         document.getElementById('password_warning').style = 'display: none;'
@@ -55,3 +55,4 @@ function checkText(th, this_id) {
 
     checkAcceptSendData()
 }
+

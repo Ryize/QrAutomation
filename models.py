@@ -1,15 +1,27 @@
+from abc import abstractmethod, ABC
 from datetime import datetime
+from flask_login import UserMixin
 
-from main import db
+from main import db, login_manager
 
 
-class User(db.Model):
+class IUser(ABC):
+    @abstractmethod
+    def register(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def login(self, **kwargs):
+        pass
+
+
+class User(db.Model, UserMixin):
     """
     Модель представления пользователя.
     Пользователь может отмечать уборку в кабинете(class: ScheduleCleaning)
     """
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(64))
     login = db.Column(db.String(64), unique=True)
     name = db.Column(db.String(64), nullable=False)
     surname = db.Column(db.String(64), nullable=False)
@@ -34,6 +46,19 @@ class User(db.Model):
         """
         self.login = self._translate(f'{self.name} {self.surname}')
         return self.login
+
+    @staticmethod
+    def register(username: str, surname: str, patronymic: str, email: str, password: str) -> IUser:
+        if not (len(username) < 2 or len(surname) < 2 or len(password) < 4 or password == '1234'):
+            user = User(name=username, surname=surname, patronymic=patronymic, password=password, email=email)
+            db.session.add(user)
+            db.session.commit()
+            return user
+        raise ValueError('Данные для регистрации не корректны!')
+
+    # TODO: Реализовать абстрактный метод login
+    def login(self):
+        pass
 
     def _translate(self, string: str) -> str:
         """
@@ -85,3 +110,8 @@ class ScheduleCleaning(db.Model):
 
 
 db.create_all()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)

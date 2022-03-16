@@ -3,141 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <title>Мой базовый сайт</title>
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
-<body onload="checkAcceptSendData()">
+<body>
 
-{% for category, msg in get_flashed_messages(True) %}
-<p class="{{ category }}">{{ msg }}</p>
-{% endfor %}
-
-<center><h1 id="text-reg">Регистрация</h1></center>
-
-<div class="container container-auth">
-    <div class="row row-auth">
-        <div class="col-xl-3 col-sm-1 col-md-1 col-lg-3"></div>
-        <div class="col-xl-6 col-sm-10 col-md-10 col-lg-6">
-            <div class="form-auth">
-                <form method="post">
-                    <div class="text-auth">
-                        <label class="help-info">* означает что данное поле обязательно к заполнению</label><br>
-                    </div>
-                    <div class="text-auth">
-                        <label data-tooltip="Это обязательное поле!">Имя<label class="help-info">*</label>:</label>
-                        <input class="form-control" type="text" name="username" maxlength="48"
-                               onchange="checkText(this, 'name_warning')" id="username">
-                        <label class="warning" id="name_warning">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_name_lenght">Имя слишком короткое(Не менее 3'х символов)!</span>
-                        </label>
-                        <br>
-                    </div>
-                    <div class="text-auth">
-                        <label data-tooltip="Это обязательное поле!">Фамилия<label class="help-info">*</label>: </label>
-                        <input class="form-control" type="text" name="surname" maxlength="48" id="surname"
-                               onchange="checkText(this, 'surname_warning')">
-                        <label class="warning" id="surname_warning">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_surname_lenght">Фамилия слишком короткая(Не менее 3'х символов)!</span>
-                        </label>
-                        <br>
-                    </div>
-                    <div class="text-auth">
-                        <label>Отчество: </label>
-                        <input class="form-control" type="text" name="patronymic" maxlength="64" id="patronymic"
-                               onchange="checkText(this, 'patronymic_warning')">
-                        <label class="warning" id="patronymic_warning">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_patronymic_lenght">Отчество слишком короткое(Не менее 3'х символов)!</span>
-                        </label>
-                        <br>
-                    </div>
-                    <div class="text-auth">
-                        <label>Почта: </label>
-                        <input class="form-control" type="email" name="email" maxlength="64" id="email"
-                               onchange="checkText(this, 'email_warning')">
-                        <label class="warning" id="email_warning">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_email_wrong">Почта недействительна!</span>
-                        </label>
-                        <br>
-                    </div>
-                    <div class="text-auth">
-                        <label data-tooltip="Это обязательное поле!">Пароль<label
-                                class="help-info">*</label>:</label>
-                        <label data-tooltip="Сгенерировать пароль">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-repeat"
-                                 fill="currentColor"
-                                 xmlns="http://www.w3.org/2000/svg"
-                                 style="margin-left: 20px;"
-                                 onclick="generatePassword()">
-                                <path fill-rule="evenodd"
-                                      d="M2.854 7.146a.5.5 0 0 0-.708 0l-2 2a.5.5 0 1 0 .708.708L2.5 8.207l1.646 1.647a.5.5 0 0 0 .708-.708l-2-2zm13-1a.5.5 0 0 0-.708 0L13.5 7.793l-1.646-1.647a.5.5 0 0 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0 0-.708z"/>
-                                <path fill-rule="evenodd"
-                                      d="M8 3a4.995 4.995 0 0 0-4.192 2.273.5.5 0 0 1-.837-.546A6 6 0 0 1 14 8a.5.5 0 0 1-1.001 0 5 5 0 0 0-5-5zM2.5 7.5A.5.5 0 0 1 3 8a5 5 0 0 0 9.192 2.727.5.5 0 1 1 .837.546A6 6 0 0 1 2 8a.5.5 0 0 1 .501-.5z"/>
-                            </svg>
-                        </label>
-                        <input class="form-control" type="text" name="password"
-                               maxlength="128" id="password" onchange="checkText(this, 'password_warning')">
-                        <label class="warning" id="password_warning">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_password_lenght">Пароль слишком короткий(Не менее 4'х символов)!</span>
-                        </label>
-                        <label class="warning" id="warning_easy">
-                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-exclamation-triangle"
-                                 fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                      d="M7.938 2.016a.146.146 0 0 0-.054.057L1.027 13.74a.176.176 0 0 0-.002.183c.016.03.037.05.054.06.015.01.034.017.066.017h13.713a.12.12 0 0 0 .066-.017.163.163 0 0 0 .055-.06.176.176 0 0 0-.003-.183L8.12 2.073a.146.146 0 0 0-.054-.057A.13.13 0 0 0 8.002 2a.13.13 0 0 0-.064.016zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
-                                <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
-                            </svg>
-                            <span id="warning_password_easy">Пароль слишком простой!</span>
-                        </label>
-                        <br>
-
-                    </div>
-
-
-                    <center>
-                        <div class="button-auth">
-                            <input class='btn btn-primary input-auth' type="submit" value="Зарегестрироваться"
-                                   id="button_submit">
-                        </div>
-                    </center>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script src="{{ url_for('static', filename='js/indexPage.js') }}"></script>
-
+<table class="table table-hover table-bordered">
+    <tr>
+        <th>Россия</th>
+        <th>Великобритания</th>
+        <th>Европа</th>
+        <th>Длина ступни, см</th>
+    </tr>
+    <tr>
+        <td>34,5</td>
+        <td>3,5</td>
+        <td>36</td>
+        <td>23</td>
+    </tr>
+    <tr>
+        <td>35,5</td>
+        <td>4</td>
+        <td>36⅔</td>
+        <td>23–23,5</td>
+    </tr>
+    <tr>
+        <td>36</td>
+        <td>4,5</td>
+        <td>37⅓</td>
+        <td>23,5</td>
+    </tr>
+    <tr>
+        <td>36,5</td>
+        <td>5</td>
+        <td>38</td>
+        <td>24</td>
+    </tr>
+    <tr>
+        <td>37</td>
+        <td>5,5</td>
+        <td>38⅔</td>
+        <td>24,5</td>
+    </tr>
+    <tr>
+        <td>38</td>
+        <td>6</td>
+        <td>39⅓</td>
+        <td>25</td>
+    </tr>
+    <tr>
+        <td>38,5</td>
+        <td>6,5</td>
+        <td>40</td>
+        <td>25,5</td>
+    </tr>
+    <tr>
+        <td>39</td>
+        <td>7</td>
+        <td>40⅔</td>
+        <td>25,5–26</td>
+    </tr>
+    <tr>
+        <td>40</td>
+        <td>7,5</td>
+        <td>41⅓</td>
+        <td>26</td>
+    </tr>
+    <tr>
+        <td>40,5</td>
+        <td>8</td>
+        <td>42</td>
+        <td>26,5</td>
+    </tr>
+    <tr>
+        <td>41</td>
+        <td>8,5</td>
+        <td>42⅔</td>
+        <td>27</td>
+    </tr>
+    <tr>
+        <td>42</td>
+        <td>9</td>
+        <td>43⅓</td>
+        <td>27,5</td>
+    </tr>
+    <tr>
+        <td>43</td>
+        <td>9,5</td>
+        <td>44</td>
+        <td>28</td>
+    </tr>
+    <tr>
+        <td>43,5</td>
+        <td>10</td>
+        <td>44⅔</td>
+        <td>28–28,5</td>
+    </tr>
+    <tr>
+        <td>44</td>
+        <td>10,5</td>
+        <td>45⅓</td>
+        <td>28,5–29</td>
+    </tr>
+    <tr>
+        <td>44,5</td>
+        <td>11</td>
+        <td>46</td>
+        <td>29</td>
+    </tr>
+    <tr>
+        <td>45</td>
+        <td>11,5</td>
+        <td>46⅔</td>
+        <td>29,5</td>
+    </tr>
+    <tr>
+        <td>46</td>
+        <td>12</td>
+        <td>47⅓</td>
+        <td>30</td>
+    </tr>
+    <tr>
+        <td>46,5</td>
+        <td>12,5</td>
+        <td>48</td>
+        <td>30,5</td>
+    </tr>
+    <tr>
+        <td>47</td>
+        <td>13</td>
+        <td>48⅔</td>
+        <td>31</td>
+    </tr>
+    <tr>
+        <td>48</td>
+        <td>13,5</td>
+        <td>49⅓</td>
+        <td>31,5</td>
+    </tr>
+</table>
 </body>
 </html>
