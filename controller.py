@@ -1,6 +1,6 @@
 from flask import render_template, request, flash, make_response, url_for, redirect
 
-from main import app, db
+from app import app, db
 from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, logout_user, login_user

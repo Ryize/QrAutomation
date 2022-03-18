@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from datetime import datetime
 from flask_login import UserMixin
 
-from main import db, login_manager
+from app import db, login_manager
 
 
 class IUser(ABC):
