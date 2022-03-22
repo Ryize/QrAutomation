@@ -1,7 +1,9 @@
-from flask import render_template, request, flash, make_response, url_for, redirect
+from datetime import datetime
+
+from flask import render_template, request, flash, make_response, url_for, redirect, session
 
 from app import app, db
-from models import User
+from models import User, Cabinet, ScheduleCleaning
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, logout_user, login_user
 
@@ -12,23 +14,23 @@ def before_request():
 
 
 @app.route('/', methods=['POST', 'GET'])
+@app.route('/schedules', methods=['POST', 'GET'])
 def index():
-    if request.method == 'POST':
-        if len(request.form.get('password')) > 3 and request.form.get('password') == '1234':
-            res = make_response(render_template('index.html'))
-            res.set_cookie('username', request.form.get('username'), max_age=60 * 60 * 24 * 31 * 12)
-            res.set_cookie('username', request.form.get('password'), max_age=60 * 60 * 24 * 31 * 12)
-            return res, 200
-        else:
-            flash('Please enter more(>4) password symbols', category='error')
-
     return render_template('index.html')
 
 
-@app.route('/admin', methods=['POST', 'GET'])
+@app.route('/new_schedule', methods=['POST', 'GET'])
 @login_required
-def admin():
-    return 'admin!'
+def new_schedule():
+    if request.method == 'POST':
+        cabinet_id = request.form.get('cabinet')
+        created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
+        user_id = session['_user_id']
+        schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
+        db.session.add(schedule)
+        db.session.commit()
+    cabinets = Cabinet.query.all()
+    return render_template('new_schedule.html', cabinets=cabinets)
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -57,7 +59,7 @@ def login():
         user = User.query.filter_by(name=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return render_template('login.html')
+            return redirect(url_for('index'))
         else:
             flash('Ошибка авторизации!', category='error')
 

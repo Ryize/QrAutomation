@@ -7,21 +7,25 @@ label {
     color: #00008B;
 }
 
-input[type~="text"], input[type~="password"], input[type~="email"], input[type~="select"], textarea
-{font-size: 100%;}
+input[type~="text"], input[type~="password"], input[type~="email"], input[type~="select"], textarea {
+    font-size: 100%;
+}
 
-input[type~="submit"], textarea
-{font-size: 82%;}
+input[type~="datetime-local"]{
+    font-size: 100%;
+}
+
+input[type~="submit"], textarea {
+    font-size: 82%;
+}
 
 .form-auth {
-    padding: 50px;
-    padding-left: 46px;
+    padding: 50px 50px 50px 46px;
     font-size: 150%;
     border: 2px solid;
     border-radius: 2%;
     background-color: white;
     box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    /*width: 23%;*/
 }
 
 .success {
@@ -54,13 +58,13 @@ input[type~="submit"], textarea
     font-size: 80%;
 }
 
-.warning{
+.warning {
     font-size: 70%;
     color: red;
     display: none;
 }
 
-.fixed-a{
+.fixed-a {
     text-decoration: none;
 }
 

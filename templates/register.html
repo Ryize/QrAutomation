@@ -9,6 +9,8 @@
 </head>
 <body onload="checkAcceptSendData(); document.getElementById('name').scrollIntoView({behavior:'smooth',block:'nearest'});return false">
 
+{% include 'template/headers.html' %}
+
 <center><h1 id="text-reg">Регистрация</h1></center>
 
 {{ all_users }}
@@ -18,17 +20,7 @@
         <div class="col-xl-3 col-sm-1 col-md-1 col-lg-3"></div>
         <div class="col-xl-6 col-sm-10 col-md-10 col-lg-6">
             <div class="form-auth">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        {% if category == 'success' %}
-                            <div class="alert alert-success" role="alert">{{ message }}</div>
-                        {% else %}
-                            <div class="alert alert-danger" role="alert" data-tooltip="Проверьте длину полей: Имя/Фамилия/Отчество/Почта/Пароль!">{{ message }}</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+                {% include 'template/flash.html' %}
                 <form method="post">
                     <div class="text-auth">
                         <label class="help-info">* означает что данное поле обязательно к заполнению</label><br>

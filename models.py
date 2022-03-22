@@ -94,6 +94,8 @@ class Cabinet(db.Model):
         return f'<Cabinet: {self.id}, {self.number}>'
 
 
+
+
 class ScheduleCleaning(db.Model):
     """
     Чтобы убрать кабинет, пользователь создаёт экземпляр данного класса.
