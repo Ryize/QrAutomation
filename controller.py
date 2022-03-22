@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from flask import render_template, request, flash, make_response, url_for, redirect, session
+from flask import render_template, request, flash, url_for, redirect, session
 
 from app import app, db
 from models import User, Cabinet, ScheduleCleaning
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from flask_login import login_required, logout_user, login_user
 
 
@@ -40,7 +40,7 @@ def register():
         surname = request.form.get('surname')
         patronymic = request.form.get('patronymic')
         email = request.form.get('email')
-        password = generate_password_hash(request.form.get('password'))
+        password = request.form.get('password')
         try:
             user = User.register(username=username, surname=surname, patronymic=patronymic, email=email,
                                  password=password)
@@ -56,9 +56,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(name=username).first()
-        if user and check_password_hash(user.password, password):
-            login_user(user)
+        if User.login(username=username, password=password):
             return redirect(url_for('index'))
         else:
             flash('Ошибка авторизации!', category='error')

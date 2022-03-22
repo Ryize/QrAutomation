@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
 from datetime import datetime
-from flask_login import UserMixin
+from flask_login import UserMixin, login_user
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db, login_manager
 
@@ -48,17 +49,32 @@ class User(db.Model, UserMixin):
         return self.login
 
     @staticmethod
+    def login(username: str, password: str) -> bool:
+        """
+        Метод аутентификации и авторизации пользователя с помощью Flask-Login
+        :return: bool(True - пользователь успешно авторизован, False - что-то пошло не так (Неверный пароль и т.п.))
+        """
+        user = User.query.filter_by(name=username).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return True
+        return False
+
+    @staticmethod
     def register(username: str, surname: str, patronymic: str, email: str, password: str) -> IUser:
+        """
+        Метод регистрации пользователя
+        :param password: str(метод шифрует пароль с помощью werkzeug.security.generate_password_hash)
+        :return: Готовый экземпляр класса User(Конкретный пользователь).
+                 Если при регистрации возникла ошибка, кидается исключение ValueError
+        """
         if not (len(username) < 2 or len(surname) < 2 or len(password) < 4 or password == '1234'):
+            password = generate_password_hash(password)
             user = User(name=username, surname=surname, patronymic=patronymic, password=password, email=email)
             db.session.add(user)
             db.session.commit()
             return user
         raise ValueError('Данные для регистрации не корректны!')
-
-    # TODO: Реализовать абстрактный метод login
-    def login(self):
-        pass
 
     def _translate(self, string: str) -> str:
         """
@@ -92,8 +108,6 @@ class Cabinet(db.Model):
 
     def __repr__(self):
         return f'<Cabinet: {self.id}, {self.number}>'
-
-
 
 
 class ScheduleCleaning(db.Model):
