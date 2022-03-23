@@ -31,7 +31,7 @@
   outline: 0;
 }
 
-.site-header {
+#site-header {
   position: fixed;
   width: 100%;
   left: 0;

@@ -16,7 +16,8 @@ def before_request():
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/schedules', methods=['POST', 'GET'])
 def index():
-    return render_template('index.html')
+    schedules = ScheduleCleaning.query.order_by(ScheduleCleaning.created_on.desc()).all()
+    return render_template('index.html', schedules=schedules, User=User, Cabinet=Cabinet)
 
 
 @app.route('/new_schedule', methods=['POST', 'GET'])
@@ -24,7 +25,11 @@ def index():
 def new_schedule():
     if request.method == 'POST':
         cabinet_id = request.form.get('cabinet')
-        created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
+        if request.form.get('auto_date') is not None:
+            created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущие время и удаляем секунды
+            created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
+        else:
+            created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
         user_id = session['_user_id']
         schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
         db.session.add(schedule)

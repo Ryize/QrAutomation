@@ -51,7 +51,11 @@ input[type~="submit"], textarea {
 }
 
 .input-auth {
-    width: 65%;
+    width: 40vh;
+}
+
+.input-auth2 {
+    width: 40vh;
 }
 
 .help-info {
@@ -90,6 +94,7 @@ input[type~="submit"], textarea {
     opacity: 0; /* Подсказка невидима */
     transition: 1s; /* Время появления подсказки */
     font-size: 55%;
+    border-radius: 7px;
 }
 
 [data-tooltip]:hover::after {

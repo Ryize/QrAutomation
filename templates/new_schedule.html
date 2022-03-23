@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Добавить новое расписание</title>
@@ -25,20 +25,29 @@
                         <select class="form-control" name="cabinet">
                             <option disabled>Выбрать кабинет</option>
                             {% for cabinet in cabinets %}
-                                <option value="{{ cabinet.id }}"><label id="cabinet">Номер: {{ cabinet.number }}</label></option>
+                            <option value="{{ cabinet.id }}">
+                                <label id="cabinet">Номер: {{ cabinet.number }}</label>
+                            </option>
                             {% endfor %}
                         </select>
                         <br>
                     </div>
-                    <div class="text-auth">
+                    <div class="form-check">
+                        <small><input class="form-check-input" name="auto_date" type="checkbox" value=""
+                                      id="checkButtonDate" onchange="controlDate()" checked></small>
+                        <label class="form-check-label" for="checkButtonDate">
+                            <small>Автоматически указать время уборки</small>
+                        </label>
+                    </div>
+                    <div class="text-auth" id="date_field">
                         <label data-tooltip="Введите дату и время уборки!">Дата и время уборки:</label>
-                        <input class="form-control" type="datetime-local" name="created_date" onload="this.valueAsDate = new Date();">
+                        <input class="form-control" type="datetime-local" name="created_date">
                     </div>
 
 
                     <center>
                         <div class="button-auth">
-                            <input class='btn btn-primary input-auth' type="submit" value="Создать расписание"
+                            <input class='btn btn-primary input-auth2' type="submit" value="Добавить"
                                    id="button_submit">
                         </div>
                     </center>
@@ -106,6 +115,8 @@
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/new_schedule.js') }}"></script>
 
 </body>
 </html>

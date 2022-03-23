@@ -56,3 +56,15 @@ function checkText(th, this_id) {
     checkAcceptSendData()
 }
 
+function controlColorBackgroundMode(){
+    let status_check = document.getElementById('ColorBackgroundMode').checked
+    let body_field = document.getElementById('body')
+    if (status_check){
+        body_field.style = 'background: #FFFFFF;\n' +
+            '        background: -webkit-linear-gradient(top left, #FFFFFF, #CCF5F9);\n' +
+            '        background: -moz-linear-gradient(top left, #FFFFFF, #CCF5F9);\n' +
+            '        background: linear-gradient(to bottom right, #FFFFFF, #CCF5F9);'
+    } else{
+        body_field.style = 'background: white;'
+    }
+}
