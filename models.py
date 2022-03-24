@@ -12,7 +12,7 @@ class IUser(ABC):
         pass
 
     @abstractmethod
-    def login(self, **kwargs):
+    def login_user(self, **kwargs):
         pass
 
 
@@ -49,7 +49,7 @@ class User(db.Model, UserMixin):
         return self.login
 
     @staticmethod
-    def login(username: str, password: str) -> bool:
+    def login_user(username: str, password: str) -> bool:
         """
         Метод аутентификации и авторизации пользователя с помощью Flask-Login
         :return: bool(True - пользователь успешно авторизован, False - что-то пошло не так (Неверный пароль и т.п.))
@@ -91,6 +91,9 @@ class User(db.Model, UserMixin):
         translate_string = ''.join(
             translate_string.title().split())  # Удаляем пробелы/табы из строки. Первая буква слова будет большой
         return translate_string
+
+    def login(self):
+        pass
 
     def __repr__(self):
         return f'<User: {self.id}, {self.name}-{self.surname}>'

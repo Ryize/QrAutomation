@@ -10,14 +10,13 @@
 <body id="body">
 
 {% include 'template/headers.html' %}
-{% include 'template/flash.html' %}
 
 <div class="form-check form-switch" id="color_mode">
     <label style="float: right">
         <small>
             <input class="form-check-input" type="checkbox" id="ColorBackgroundMode"
                    onchange="controlColorBackgroundMode()">
-            <label class="form-check-label" for="ColorBackgroundMode">Цветной режим</label>
+            <label class="form-check-label" for="ColorBackgroundMode">Ночной режим</label>
         </small>
     </label>
 </div>
@@ -25,12 +24,14 @@
 <center><h1>Расписание уборок</h1></center>
 <br>
 
+{% include 'template/flash.html' %}
+
 <table class="table table-hover table-bordered">
     <tr>
         <th>Дата</th>
         <th>Время</th>
         <th>Кабинет</th>
-        <th><span data-tooltip="Уникальный идентификатор пользователя">id</span>, Фамилия, Имя, Отчество работника
+        <th>Фамилия, Имя, Отчество, <span data-tooltip="Уникальный идентификатор пользователя">id</span> работника
         </th>
         <th>Подпись</th>
     </tr>
