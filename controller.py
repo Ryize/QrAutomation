@@ -84,6 +84,8 @@ def register():
             user = User.register(username=username, surname=surname, patronymic=patronymic, email=email,
                                  password=password)
             login_user(user)
+            flash('Вы успешно зарегистрировались!', category='success')
+            return redirect(url_for('index'))
         except ValueError:
             flash('Ошибка регистрации!', category='error')
 
