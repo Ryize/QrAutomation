@@ -15,7 +15,10 @@ def index():
     if search:
         search_list = search.split()
         if len(search_list) == 1:
-            user = User.query.get(search_list[0])
+            if search_list[0].isdigit():
+                user = User.query.get(search_list[0])
+            else:
+                user = User.query.filter_by(surname=search_list[0]).first()
         else:
             user = User.query.filter_by(surname=search_list[0]).filter_by(name=search_list[1])
             if len(search_list) == 3:
@@ -23,7 +26,10 @@ def index():
             user = user.first()
         if user:
             schedules = user.user_sc
-            flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
+            if not schedules:
+                flash('Этот сотрудник не убирался!', category='error')
+            else:
+                flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
         else:
             flash('Мы не нашли такого сотрудника!', category='error')
     return render_template('index.html', schedules=schedules, User=User, Cabinet=Cabinet)
@@ -47,6 +53,23 @@ def new_schedule():
         return redirect(url_for('index'))
     cabinets = Cabinet.query.all()
     return render_template('new_schedule.html', cabinets=cabinets)
+
+
+@app.route('/new_cabinet', methods=['POST', 'GET'])
+@login_required
+def new_cabinet():
+    if not User.query.get(session['_user_id']).admin_status:
+        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        cabinet_number = request.form.get('cabinet')
+        cabinet = Cabinet(number=cabinet_number)
+        db.session.add(cabinet)
+        db.session.commit()
+        flash(f'Кабинет с номером: {cabinet_number} успешно создан!', category='success')
+        return redirect(url_for('index'))
+    cabinets = Cabinet.query.all()
+    return render_template('new_cabinet.html', cabinets=cabinets)
 
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -74,6 +97,8 @@ def login():
         password = request.form.get('password')
         if User.login_user(username=username, password=password):
             return redirect(url_for('index'))
+        else:
+            flash('Ошибка авторизации!', category='error')
 
     return render_template('login.html')
 

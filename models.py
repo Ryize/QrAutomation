@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(64), nullable=False)
     surname = db.Column(db.String(64), nullable=False)
     patronymic = db.Column(db.String(64))
+    admin_status = db.Column(db.Boolean, default=False)
     password = db.Column(db.String(128), nullable=False)
     user_sc = db.relationship('ScheduleCleaning', backref='user')
     created_on = db.Column(db.DateTime, default=datetime.utcnow)

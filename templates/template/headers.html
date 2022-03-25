@@ -72,6 +72,9 @@
                         {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('new_schedule') }}" class="nav-link px-2 text-white">Добавить расписание</a></li>
                         {% endif %}
+                        {% if current_user.admin_status %}
+                                <li><a href="{{ url_for('new_cabinet') }}" class="nav-link px-2 text-white">Добавить кабинет</a></li>
+                         {% endif %}
                         <li><a href="#" class="nav-link px-2 text-white">О Нас</a></li>
                     </ul>
 
