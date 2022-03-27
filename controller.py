@@ -40,19 +40,38 @@ def index():
 def new_schedule():
     if request.method == 'POST':
         cabinet_id = request.form.get('cabinet')
-        if request.form.get('auto_date') is not None:
-            created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущее время и удаляем секунды
-            created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
-        else:
-            created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
-        user_id = session['_user_id']
-        schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
-        db.session.add(schedule)
-        db.session.commit()
-        flash(f'Расписание кабинета успешно создано!', category='success')
-        return redirect(url_for('index'))
+        return _create_schedule(cabinet_id)
     cabinets = Cabinet.query.all()
     return render_template('new_schedule.html', cabinets=cabinets)
+
+
+def _create_schedule(cabinet_id):
+    created_on = _get_date()
+    user_id = session['_user_id']
+    schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
+    db.session.add(schedule)
+    db.session.commit()
+    flash(f'Расписание кабинета успешно создано!', category='success')
+    return redirect(url_for('index'))
+
+
+@app.route('/new_schedule/<cabinet_number>', methods=['POST', 'GET'])
+@login_required
+def new_schedule_id(cabinet_number):
+    if request.method == 'POST':
+        cabinet_id = Cabinet.query.filter_by(number=cabinet_number).first().id
+        return _create_schedule(cabinet_id)
+    cabinets = Cabinet.query.all()
+    return render_template('new_schedule.html', cabinets=cabinets, cabinet_number=cabinet_number)
+
+
+def _get_date():
+    if request.form.get('auto_date') is not None:
+        created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущее время и удаляем секунды
+        created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
+    else:
+        created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
+    return created_on
 
 
 @app.route('/new_cabinet', methods=['POST', 'GET'])

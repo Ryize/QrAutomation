@@ -22,15 +22,20 @@
                 {% include 'template/flash.html' %}
                 <form method="post">
                     <div class="text-auth">
-                        <label data-tooltip="Выберите нужный номер кабинета!">Номер кабинета:</label>
-                        <select class="form-control" name="cabinet">
-                            <option disabled>Выбрать кабинет</option>
-                            {% for cabinet in cabinets %}
-                            <option value="{{ cabinet.id }}">
-                                <label id="cabinet">Номер: {{ cabinet.number }}</label>
-                            </option>
-                            {% endfor %}
-                        </select>
+                        {% if cabinet_number %}
+                            <label data-tooltip="Номер кабинета изменить нельзя!">Номер кабинета: {{ cabinet_number }}</label>
+                            <input type="hidden" name="cabinet" value="{{ cabinet_number }}">
+                        {% else %}
+                            <label data-tooltip="Выберите нужный номер кабинета!">Номер кабинета: {{ cabinet_number }}</label>
+                            <select class="form-control" name="cabinet">
+                                <option disabled>Выбрать кабинет</option>
+                                {% for cabinet in cabinets %}
+                                <option value="{{ cabinet.id }}">
+                                    <label id="cabinet">Номер: {{ cabinet.number }}</label>
+                                </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
                         <br>
                     </div>
                     <div class="form-check">
