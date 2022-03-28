@@ -68,12 +68,12 @@
                     </a>
 
                     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                        <li><a href="{{ url_for('index') }}" class="nav-link px-2 text-white">На главную</a></li>
                         {% if current_user.is_authenticated %}
                             <li><a href="{{ url_for('new_schedule') }}" class="nav-link px-2 text-white">Добавить расписание</a></li>
                         {% endif %}
                         {% if current_user.admin_status %}
                                 <li><a href="{{ url_for('new_cabinet') }}" class="nav-link px-2 text-white">Добавить кабинет</a></li>
+                                <li><a href="{{ url_for('new_cabinet_qr') }}" class="nav-link px-2 text-white">Создать QR</a></li>
                          {% endif %}
                         <li><a href="#" class="nav-link px-2 text-white">О Нас</a></li>
                     </ul>

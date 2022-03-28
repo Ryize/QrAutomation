@@ -13,6 +13,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
+SITE_URL = '127.0.0.1:5000'
+
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)

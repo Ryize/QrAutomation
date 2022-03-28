@@ -1,14 +1,46 @@
 from datetime import datetime
 
-from flask import render_template, request, flash, url_for, redirect, session
+from flask import render_template, request, flash, url_for, redirect, session, send_file
 
-from app import app, db
+from app import app, db, SITE_URL
 from models import User, Cabinet, ScheduleCleaning
 from flask_login import login_required, logout_user, login_user
 
+from random import choice
+from string import ascii_uppercase
 
-@app.route('/', methods=['POST', 'GET'])
-@app.route('/schedules', methods=['POST', 'GET'])
+import qrcode
+
+
+def _get_date():
+    if request.form.get('auto_date') is not None:
+        created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущее время и удаляем секунды
+        created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
+    else:
+        created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
+    return created_on
+
+
+def _create_schedule(cabinet_id):
+    created_on = _get_date()
+    user_id = session['_user_id']
+    schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
+    db.session.add(schedule)
+    db.session.commit()
+    flash(f'Расписание кабинета успешно создано!', category='success')
+    return redirect(url_for('index'))
+
+
+def generate_qr_code(id: str):
+    data = f'{SITE_URL}/new_schedule/{id}'
+    file_path = f"qrCodes/{''.join(choice(ascii_uppercase) for i in range(8))}.png"
+    img = qrcode.make(data)
+    img.save(file_path)
+    return file_path
+
+
+@app.route('/')
+@app.route('/schedules')
 def index():
     search = request.args.get('query')
     schedules = ScheduleCleaning.query.order_by(ScheduleCleaning.created_on.desc()).all()
@@ -41,18 +73,8 @@ def new_schedule():
     if request.method == 'POST':
         cabinet_id = request.form.get('cabinet')
         return _create_schedule(cabinet_id)
-    cabinets = Cabinet.query.all()
+    cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_schedule.html', cabinets=cabinets)
-
-
-def _create_schedule(cabinet_id):
-    created_on = _get_date()
-    user_id = session['_user_id']
-    schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
-    db.session.add(schedule)
-    db.session.commit()
-    flash(f'Расписание кабинета успешно создано!', category='success')
-    return redirect(url_for('index'))
 
 
 @app.route('/new_schedule/<cabinet_number>', methods=['POST', 'GET'])
@@ -61,17 +83,22 @@ def new_schedule_id(cabinet_number):
     if request.method == 'POST':
         cabinet_id = Cabinet.query.filter_by(number=cabinet_number).first().id
         return _create_schedule(cabinet_id)
-    cabinets = Cabinet.query.all()
+    cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_schedule.html', cabinets=cabinets, cabinet_number=cabinet_number)
 
 
-def _get_date():
-    if request.form.get('auto_date') is not None:
-        created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущее время и удаляем секунды
-        created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
-    else:
-        created_on = datetime.strptime(request.form.get('created_date'), "%Y-%m-%dT%H:%M")
-    return created_on
+@app.route('/new_cabinet_qr/', methods=['POST', 'GET'])
+@login_required
+def new_cabinet_qr():
+    if request.method == 'POST':
+        cabinet_number = request.form.get('cabinet')
+        if not len(cabinet_number.split('.')) == 2:
+            flash(f'Номер кабинета должен разделятся точкой(Пример: 1.27)!', category='error')
+            return redirect(url_for('index'))
+        file_path = generate_qr_code(cabinet_number)
+        return send_file(file_path, as_attachment=True)
+    cabinets = Cabinet.query.order_by(Cabinet.number).all()
+    return render_template('new_cabinet_qr.html', cabinets=cabinets)
 
 
 @app.route('/new_cabinet', methods=['POST', 'GET'])
@@ -82,12 +109,15 @@ def new_cabinet():
         return redirect(url_for('index'))
     if request.method == 'POST':
         cabinet_number = request.form.get('cabinet')
+        if not len(cabinet_number.split('.')) == 2:
+            flash(f'Номер кабинета должен разделятся точкой(Пример: 1.27)!', category='error')
+            return redirect(url_for('index'))
         cabinet = Cabinet(number=cabinet_number)
         db.session.add(cabinet)
         db.session.commit()
         flash(f'Кабинет с номером: {cabinet_number} успешно создан!', category='success')
         return redirect(url_for('index'))
-    cabinets = Cabinet.query.all()
+    cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_cabinet.html', cabinets=cabinets)
 
 
