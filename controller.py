@@ -5,11 +5,10 @@ from flask import render_template, request, flash, url_for, redirect, session, s
 from app import app, db, SITE_URL
 from models import User, Cabinet, ScheduleCleaning
 from flask_login import login_required, logout_user, login_user
-
-from random import choice
-from string import ascii_uppercase
+from PIL import Image, ImageDraw
 
 import qrcode
+import os
 
 
 def _get_date():
@@ -33,9 +32,20 @@ def _create_schedule(cabinet_id):
 
 def generate_qr_code(id: str):
     data = f'{SITE_URL}/new_schedule/{id}'
-    file_path = f"qrCodes/{''.join(choice(ascii_uppercase) for i in range(8))}.png"
+    file_path = f"qrCodes/Кабинет: {id}.png"
     img = qrcode.make(data)
     img.save(file_path)
+
+    image = Image.open(file_path)
+
+    drawer = ImageDraw.Draw(image)
+    drawer.text((10, 0), f"CABINET: {id}", fill='black')
+
+    os.remove(file_path)
+
+    image.save(file_path)
+    image.show()
+
     return file_path
 
 
@@ -96,7 +106,10 @@ def new_cabinet_qr():
             flash(f'Номер кабинета должен разделятся точкой(Пример: 1.27)!', category='error')
             return redirect(url_for('index'))
         file_path = generate_qr_code(cabinet_number)
-        return send_file(file_path, as_attachment=True)
+        try:
+            return send_file(file_path, as_attachment=True)
+        finally:
+            os.remove(file_path)
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_cabinet_qr.html', cabinets=cabinets)
 
