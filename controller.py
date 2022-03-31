@@ -7,6 +7,8 @@ from models import User, Cabinet, ScheduleCleaning
 from flask_login import login_required, logout_user, login_user
 from PIL import Image, ImageDraw
 
+from error_controller import *
+
 import qrcode
 import os
 
@@ -31,7 +33,7 @@ def _create_schedule(cabinet_id):
 
 
 def generate_qr_code(id: str):
-    data = f'{SITE_URL}/new_schedule/{id}'
+    data = f'http://{SITE_URL}/new_schedule/{id}'
     file_path = f"qrCodes/Кабинет: {id}.png"
     img = qrcode.make(data)
     img.save(file_path)
@@ -180,8 +182,3 @@ def redirect_to_sign(response):
         return redirect(url_for('login'))
 
     return response
-
-
-@app.errorhandler(404)
-def error404(error):
-    return render_template('error/404.html'), 404
