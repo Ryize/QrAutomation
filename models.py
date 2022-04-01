@@ -55,7 +55,11 @@ class User(db.Model, UserMixin):
         Метод аутентификации и авторизации пользователя с помощью Flask-Login
         :return: bool(True - пользователь успешно авторизован, False - что-то пошло не так (Неверный пароль и т.п.))
         """
-        user = User.query.filter_by(name=username).first()
+        user = User.query.filter_by(login=username).first()
+        if not user:
+            user = User.query.filter_by(email=username).first()
+        if not user:
+            user = User.query.filter_by(id=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user)
             return True
