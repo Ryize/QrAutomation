@@ -66,7 +66,8 @@ class User(db.Model, UserMixin):
         return False
 
     @staticmethod
-    def register(username: str, surname: str, patronymic: str, email: str, password: str) -> IUser:
+    def register(username: str, surname: str, patronymic: str, email: str, password: str,
+                 auto_login: bool = True) -> IUser:
         """
         Метод регистрации пользователя
         :param password: str(метод шифрует пароль с помощью werkzeug.security.generate_password_hash)
@@ -76,6 +77,8 @@ class User(db.Model, UserMixin):
         if not (len(username) < 2 or len(surname) < 2 or len(password) < 4 or password == '1234'):
             password = generate_password_hash(password)
             user = User(name=username, surname=surname, patronymic=patronymic, password=password, email=email)
+            if auto_login:
+                user.create_login()
             db.session.add(user)
             db.session.commit()
             return user
