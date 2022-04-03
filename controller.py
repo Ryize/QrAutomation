@@ -9,11 +9,17 @@ from PIL import Image, ImageDraw
 
 from error_controller import *
 
+from werkzeug.wrappers.response import Response
+
 import qrcode
 import os
 
 
-def _get_date():
+def _get_date() -> datetime:
+    """
+    Получает дату для расписания, переданную пользователем.
+    Если стоит автоматическое определние, то функция сама получает дату
+    """
     if request.form.get('auto_date') is not None:
         created_on = ':'.join(str(datetime.now()).split(':')[:-1])  # Получаем текущее время и удаляем секунды
         created_on = datetime.strptime(created_on, "%Y-%m-%d %H:%M")
@@ -22,17 +28,36 @@ def _get_date():
     return created_on
 
 
-def _create_schedule(cabinet_id):
+def _create_schedule(cabinet_id) -> Response:
+    """
+    Функция для создания нового расписания. Получение даты происходит с помощью _get_date()
+    Возвращает ссылку для перехода на главную страницу(Функция: index)
+    """
     created_on = _get_date()
     user_id = session['_user_id']
     schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
     db.session.add(schedule)
     db.session.commit()
     flash(f'Расписание кабинета успешно создано!', category='success')
+    print(type(redirect(url_for('index'))))
     return redirect(url_for('index'))
 
 
-def generate_qr_code(id: str):
+def check_admin_status() -> bool:
+    """
+    Проверяет является ли пользователем Администратором(С помощью сессии: session['_user_id'])
+    """
+    if User.query.get(session['_user_id']).admin_status:
+        return True
+    return False
+
+
+def generate_qr_code(id: str) -> str:
+    """
+    Функция генерирует qr код в который вшита ссылка для создания нового кабинета
+    Пример: http://127.0.0.1/new_schedule/2.18
+    qr код сохраняется в папку qrCodes в виде png картинки(Пример такого файла: 'Кабинет: 2.18.png')
+    """
     data = f'http://{SITE_URL}/new_schedule/{id}'
     file_path = f"qrCodes/Кабинет: {id}.png"
     img = qrcode.make(data)
@@ -89,6 +114,19 @@ def new_schedule():
     return render_template('new_schedule.html', cabinets=cabinets)
 
 
+@app.route('/delete_schedule', methods=['GET'])
+@login_required
+def delete_schedule():
+    if not check_admin_status():
+        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        return redirect(url_for('index'))
+    schedule_id = request.args.get('schedule_id')
+
+    ScheduleCleaning.query.filter_by(id=schedule_id).delete()
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
 @app.route('/new_schedule/<cabinet_number>', methods=['POST', 'GET'])
 @login_required
 def new_schedule_id(cabinet_number):
@@ -102,6 +140,9 @@ def new_schedule_id(cabinet_number):
 @app.route('/new_cabinet_qr/', methods=['POST', 'GET'])
 @login_required
 def new_cabinet_qr():
+    if not check_admin_status():
+        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        return redirect(url_for('index'))
     if request.method == 'POST':
         cabinet_number = request.form.get('cabinet')
         if not len(cabinet_number.split('.')) == 2:
@@ -119,7 +160,7 @@ def new_cabinet_qr():
 @app.route('/new_cabinet', methods=['POST', 'GET'])
 @login_required
 def new_cabinet():
-    if not User.query.get(session['_user_id']).admin_status:
+    if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
         return redirect(url_for('index'))
     if request.method == 'POST':
