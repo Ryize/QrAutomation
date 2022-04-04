@@ -76,6 +76,20 @@ def generate_qr_code(id: str) -> str:
     return file_path
 
 
+def get_user_info(user: User = None) -> str:
+    """
+    Функция для получения информации по пользователю(Его id, ФИО, почта).
+    :return: str(В строке уже записаны все данные)
+    """
+    if not user:
+        user = User.query.get(session['_user_id'])
+    return f"(id: {user.id}). {user.surname} {user.name} {user.patronymic}(Почта: {user.email})"
+
+def auth_user() -> bool:
+    """ Функция проверяет авторизован ли пользователь """
+    return bool(session['_user_id'])
+
+
 @app.route('/')
 @app.route('/schedules')
 def index():
@@ -109,6 +123,7 @@ def index():
 def new_schedule():
     if request.method == 'POST':
         cabinet_id = request.form.get('cabinet')
+        app.logger.info(f"Создано новое расписание для кабинета: {cabinet_id}. Создал(а): {get_user_info()}")
         return _create_schedule(cabinet_id)
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_schedule.html', cabinets=cabinets)
@@ -119,6 +134,7 @@ def new_schedule():
 def delete_schedule():
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался удалить расписание: {get_user_info()}")
         return redirect(url_for('index'))
     schedule_id = request.args.get('schedule_id')
 
@@ -132,6 +148,7 @@ def delete_schedule():
 def new_schedule_id(cabinet_number):
     if request.method == 'POST':
         cabinet_id = Cabinet.query.filter_by(number=cabinet_number).first().id
+        app.logger.info(f"Создано новое расписание: {cabinet_number}. Создал(а): {get_user_info()}")
         return _create_schedule(cabinet_id)
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_schedule.html', cabinets=cabinets, cabinet_number=cabinet_number)
@@ -142,6 +159,7 @@ def new_schedule_id(cabinet_number):
 def new_cabinet_qr():
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать qr код: {get_user_info()}")
         return redirect(url_for('index'))
     if request.method == 'POST':
         cabinet_number = request.form.get('cabinet')
@@ -153,6 +171,7 @@ def new_cabinet_qr():
             return send_file(file_path, as_attachment=True)
         finally:
             os.remove(file_path)
+            app.logger.info(f"Создан новый qr код для кабинета: {cabinet_number}. Создал(а): {get_user_info()}")
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_cabinet_qr.html', cabinets=cabinets)
 
@@ -162,6 +181,7 @@ def new_cabinet_qr():
 def new_cabinet():
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать кабинет: {get_user_info()}")
         return redirect(url_for('index'))
     if request.method == 'POST':
         cabinet_number = request.form.get('cabinet')
@@ -172,6 +192,7 @@ def new_cabinet():
         db.session.add(cabinet)
         db.session.commit()
         flash(f'Кабинет с номером: {cabinet_number} успешно создан!', category='success')
+        app.logger.info(f"Создан новый кабинет: {cabinet_number}. Создал(а): {get_user_info()}")
         return redirect(url_for('index'))
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_cabinet.html', cabinets=cabinets)
@@ -188,8 +209,8 @@ def register():
         try:
             user = User.register(username=username, surname=surname, patronymic=patronymic, email=email,
                                  password=password)
-            login_user(user)
             flash('Вы успешно зарегистрировались!', category='success')
+            app.logger.info(f"Зарегестрирован новый аккаунт: {get_user_info(user)}.")
             return redirect(url_for('index'))
         except ValueError:
             flash('Ошибка регистрации!', category='error')

@@ -9,4 +9,5 @@ def error404(error):
 
 @app.errorhandler(500)
 def error500(error):
+    app.logger.critical(f"Возникла ошибка 500!!!")
     return render_template('error/500.html'), 500
