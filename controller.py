@@ -110,7 +110,7 @@ def index():
         if user:
             schedules = user.user_sc
             if not schedules:
-                flash('Этот сотрудник не убирался!', category='error')
+                flash('Этот сотрудник не создавал расписаний!', category='error')
             else:
                 flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
         else:

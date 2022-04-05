@@ -25,5 +25,4 @@ if __name__ == '__main__':
     from logger import get_logger_handler
 
     app.logger.addHandler(get_logger_handler())
-
     app.run()
