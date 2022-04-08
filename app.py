@@ -22,6 +22,7 @@ migrate_bd = Migrate(app, db)
 
 if __name__ == '__main__':
     from controller import app
+    from admin import app
     from logger import get_logger_handler
 
     app.logger.addHandler(get_logger_handler())

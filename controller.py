@@ -1,18 +1,14 @@
 from datetime import datetime
 
-from flask import render_template, request, flash, url_for, redirect, session, send_file
+from flask import render_template, request, flash, url_for, redirect, session
 
-from app import app, db, SITE_URL
+from app import app, db
 from models import User, Cabinet, ScheduleCleaning
-from flask_login import login_required, logout_user, login_user
-from PIL import Image, ImageDraw
+from flask_login import login_required, logout_user
 
 from error_controller import *
 
 from werkzeug.wrappers.response import Response
-
-import qrcode
-import os
 
 
 def _get_date() -> datetime:
@@ -28,7 +24,7 @@ def _get_date() -> datetime:
     return created_on
 
 
-def _create_schedule(cabinet_id) -> Response:
+def _create_schedule(cabinet_id: int) -> Response:
     """
     Функция для создания нового расписания. Получение даты происходит с помощью _get_date()
     Возвращает ссылку для перехода на главную страницу(Функция: index)
@@ -52,30 +48,6 @@ def check_admin_status() -> bool:
     return False
 
 
-def generate_qr_code(id: str) -> str:
-    """
-    Функция генерирует qr код в который вшита ссылка для создания нового кабинета
-    Пример: http://127.0.0.1/new_schedule/2.18
-    qr код сохраняется в папку qrCodes в виде png картинки(Пример такого файла: 'Кабинет: 2.18.png')
-    """
-    data = f'http://{SITE_URL}/new_schedule/{id}'
-    file_path = f"qrCodes/Кабинет: {id}.png"
-    img = qrcode.make(data)
-    img.save(file_path)
-
-    image = Image.open(file_path)
-
-    drawer = ImageDraw.Draw(image)
-    drawer.text((10, 0), f"CABINET: {id}", fill='black')
-
-    os.remove(file_path)
-
-    image.save(file_path)
-    image.show()
-
-    return file_path
-
-
 def get_user_info(user: User = None) -> str:
     """
     Функция для получения информации по пользователю(Его id, ФИО, почта).
@@ -84,6 +56,7 @@ def get_user_info(user: User = None) -> str:
     if not user:
         user = User.query.get(session['_user_id'])
     return f"(id: {user.id}). {user.surname} {user.name} {user.patronymic}(Почта: {user.email})"
+
 
 def auth_user() -> bool:
     """ Функция проверяет авторизован ли пользователь """
@@ -154,50 +127,6 @@ def new_schedule_id(cabinet_number):
     return render_template('new_schedule.html', cabinets=cabinets, cabinet_number=cabinet_number)
 
 
-@app.route('/new_cabinet_qr/', methods=['POST', 'GET'])
-@login_required
-def new_cabinet_qr():
-    if not check_admin_status():
-        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
-        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать qr код: {get_user_info()}")
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        cabinet_number = request.form.get('cabinet')
-        if not len(cabinet_number.split('.')) == 2:
-            flash(f'Номер кабинета должен разделятся точкой(Пример: 1.27)!', category='error')
-            return redirect(url_for('index'))
-        file_path = generate_qr_code(cabinet_number)
-        try:
-            return send_file(file_path, as_attachment=True)
-        finally:
-            os.remove(file_path)
-            app.logger.info(f"Создан новый qr код для кабинета: {cabinet_number}. Создал(а): {get_user_info()}")
-    cabinets = Cabinet.query.order_by(Cabinet.number).all()
-    return render_template('new_cabinet_qr.html', cabinets=cabinets)
-
-
-@app.route('/new_cabinet', methods=['POST', 'GET'])
-@login_required
-def new_cabinet():
-    if not check_admin_status():
-        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
-        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать кабинет: {get_user_info()}")
-        return redirect(url_for('index'))
-    if request.method == 'POST':
-        cabinet_number = request.form.get('cabinet')
-        if not len(cabinet_number.split('.')) == 2:
-            flash(f'Номер кабинета должен разделятся точкой(Пример: 1.27)!', category='error')
-            return redirect(url_for('index'))
-        cabinet = Cabinet(number=cabinet_number)
-        db.session.add(cabinet)
-        db.session.commit()
-        flash(f'Кабинет с номером: {cabinet_number} успешно создан!', category='success')
-        app.logger.info(f"Создан новый кабинет: {cabinet_number}. Создал(а): {get_user_info()}")
-        return redirect(url_for('index'))
-    cabinets = Cabinet.query.order_by(Cabinet.number).all()
-    return render_template('new_cabinet.html', cabinets=cabinets)
-
-
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
@@ -215,7 +144,7 @@ def register():
         except ValueError:
             flash('Ошибка регистрации!', category='error')
 
-    return render_template('register.html', all_user=User.query.all())
+    return render_template('auth/register.html', all_user=User.query.all())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -228,7 +157,7 @@ def login():
         else:
             flash('Ошибка авторизации!', category='error')
 
-    return render_template('login.html')
+    return render_template('auth/login.html')
 
 
 @app.route("/logout")

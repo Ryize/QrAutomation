@@ -60,28 +60,37 @@
         <header class="p-3 bg-dark text-white">
             <div class="container">
                 <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                    <a href="{{ url_for('index') }}"
-                       class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
-                            <use xlink:href="#bootstrap"/>
-                        </svg>
-                    </a>
+                    {% block img_url %}
+                        <a href="{{ url_for('index') }}"
+                           class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                            <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                                <use xlink:href="#bootstrap"/>
+                            </svg>
+                        </a>
+                    {% endblock %}
 
                     <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                         {% if current_user.is_authenticated %}
-                            <li><a href="{{ url_for('new_schedule') }}" class="nav-link px-2 text-white">Добавить расписание</a></li>
+                            {% block add_schedule %}
+                                <li><a href="{{ url_for('new_schedule') }}" class="nav-link px-2 text-white">Добавить расписание</a></li>
+                            {% endblock %}
                         {% endif %}
                         {% if current_user.admin_status %}
-                                <li><a href="{{ url_for('new_cabinet') }}" class="nav-link px-2 text-white">Добавить кабинет</a></li>
-                                <li><a href="{{ url_for('new_cabinet_qr') }}" class="nav-link px-2 text-white">Создать QR</a></li>
+                            {% block admin %}
+                                <li><a href="{{ url_for('admin_index') }}" class="nav-link px-2 text-white">Панель Администратора</a></li>
+                            {% endblock %}
                          {% endif %}
-                        <li><a href="#" class="nav-link px-2 text-white">О Нас</a></li>
+                        {% block about_us %}
+                            <li><a href="#" class="nav-link px-2 text-white">О Нас</a></li>
+                        {% endblock %}
                     </ul>
 
-                    <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{{ url_for('index')}}">
-                        <input type="search" class="form-control form-control-dark" placeholder="Введите запрос..."
-                               aria-label="Поиск" name="query">
-                    </form>
+                    {% block search %}
+                        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{{ url_for('index')}}">
+                            <input type="search" class="form-control form-control-dark" placeholder="Введите запрос..."
+                                   aria-label="Поиск" name="query">
+                        </form>
+                    {% endblock %}
 
                     <div class="text-end">
                         {% if not current_user.is_authenticated %}
@@ -89,9 +98,11 @@
                                 onclick="location.href=`{{ url_for('login') }}`">Войти
                         </button>
                         {% else %}
+                        {% block logout %}
                         <button type="button" class="btn btn-outline-light me-2"
                                 onclick="location.href=`{{ url_for('logout') }}`">Выйти
                         </button>
+                        {% endblock %}
                         {% endif %}
                     </div>
 
