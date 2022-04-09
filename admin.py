@@ -50,6 +50,11 @@ def admin_index():
 @app.route('/work_with_user', methods=['GET', 'POST'])
 @login_required
 def work_with_user():
+    """
+    Функция при GET запросе возвращает страницу,
+    где в формате таблицы выведена информация о пользователях(ФИО, Почта, Статус Администратора).
+    При POST запросе, удаляет пользователя которого выбрал Администратор(Администратора удалить нельзя)
+    """
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
         app.logger.warning(
@@ -69,6 +74,10 @@ def work_with_user():
 @app.route('/admin/new_cabinet_qr/', methods=['POST', 'GET'])
 @login_required
 def new_cabinet_qr():
+    """
+    При GET запросе возвращает страницу с выбаром кабинета, для которого сгенерировать qr код.
+    При POST запросе, генерирует и сохраняет qr код, возвращает получившийся файл
+    """
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
         app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать qr код: {get_user_info()}")
@@ -91,6 +100,11 @@ def new_cabinet_qr():
 @app.route('/admin/new_cabinet', methods=['POST', 'GET'])
 @login_required
 def new_cabinet():
+    """
+    При GET запросе возвращает страницу на которой необходимо написать номер кабинета(Номер должен быть разделён точкой,
+    пример: 2.18).
+    При POST запросе создаёьт кабинет, с указанным пользователем номером
+    """
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
         app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать кабинет: {get_user_info()}")
@@ -113,6 +127,10 @@ def new_cabinet():
 @app.route('/admin/delete_cabinet', methods=['GET', 'POST'])
 @login_required
 def delete_cabinet():
+    """
+    При GET запросе возвращает страницу на которой необходимо выбрать удаляемый кабинет.
+    При POST запросе удаляет выбранный Администратором кабинет
+    """
     if request.method == 'POST':
         if not check_admin_status():
             flash(f'У вас нет прав для просмотра данной страницы!', category='error')

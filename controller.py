@@ -66,6 +66,11 @@ def auth_user() -> bool:
 @app.route('/')
 @app.route('/schedules')
 def index():
+    """
+    Гланая страница сайта, на ней выводится таблица с расписанием уборок(Дата, время, кабинет, ФИО, подпись).
+    При пустом GET запросе, возвращает саму таблицу, также функция реализует логику строки поиска
+    (Поиск по: User id, User surname(фамилия) + User name(имя) +User patronymic(Отчество, если есть))
+    """
     search = request.args.get('query')
     schedules = ScheduleCleaning.query.order_by(ScheduleCleaning.created_on.desc()).all()
     if search:
@@ -94,6 +99,10 @@ def index():
 @app.route('/new_schedule', methods=['POST', 'GET'])
 @login_required
 def new_schedule():
+    """
+    При GET запросе возвращает страницу для создания нового расписания.
+    При POST запросе, создаёт кабинет(Используется функция _create_schedule)
+    """
     if request.method == 'POST':
         cabinet_id = request.form.get('cabinet')
         app.logger.info(f"Создано новое расписание для кабинета: {cabinet_id}. Создал(а): {get_user_info()}")
@@ -105,6 +114,12 @@ def new_schedule():
 @app.route('/delete_schedule', methods=['GET'])
 @login_required
 def delete_schedule():
+    # TODO: Перенести функцию в admin.py
+    """
+    При GET запросе возвращает страницу для удаления расписания.
+    При POST запросе, удаляет выбранное расписани
+    (Запрос на удаление идэт с главной страницы(func index), шаблона(template) функция не имеет)
+    """
     if not check_admin_status():
         flash(f'У вас нет прав для просмотра данной страницы!', category='error')
         app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался удалить расписание: {get_user_info()}")
@@ -119,6 +134,11 @@ def delete_schedule():
 @app.route('/new_schedule/<cabinet_number>', methods=['POST', 'GET'])
 @login_required
 def new_schedule_id(cabinet_number):
+    """
+    При GET запросе возвращает страницу для создания нового расписания
+    (В html шаблоне кабинет изменить нельзя, используется для создания расписания с qr).
+    При POST запросе, создаёт кабинет(Используется функция _create_schedule)
+    """
     if request.method == 'POST':
         cabinet_id = Cabinet.query.filter_by(number=cabinet_number).first().id
         app.logger.info(f"Создано новое расписание: {cabinet_number}. Создал(а): {get_user_info()}")
@@ -169,6 +189,10 @@ def logout():
 
 @app.after_request
 def redirect_to_sign(response):
+    """
+    Если пользователь не авторизован и пытается зайти на страницу для авторизованных(@login_required),
+    то функция перенаправит на страницу авторизации
+    """
     if response.status_code == 401:
         return redirect(url_for('login'))
 
