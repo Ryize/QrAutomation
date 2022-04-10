@@ -44,6 +44,6 @@ def get_logger_handler():
     handler = ZipTimedRotatingFileHandler(app.config['LOGFILE'], when="midnight", interval=1, backupCount=3)
 
     handler.setLevel(app.config['LOGGER_LEVEL'])
-    handler.setFormatter(Formatter('%(asctime)s %(levelname)s: %(message)s '))
+    handler.setFormatter(Formatter('%(asctime)s | %(levelname)s | %(message)s '))
 
     return handler

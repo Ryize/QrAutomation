@@ -47,6 +47,27 @@ def admin_index():
     return render_template('admin/index.html', users=users, cabinets=cabinets)
 
 
+@app.route('/logs', methods=['GET', 'POST'])
+@login_required
+def admin_log():
+    if not check_admin_status():
+        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        app.logger.warning(
+            f"Сотрудник с недостаточным уровнем допуска попытался посмотреть логи: {get_user_info()}")
+        return redirect(url_for('index'))
+    with open(app.config['LOGFILE'], 'r') as file:
+        logs = file.read().split('\n')
+        del logs[-1]  # Последним элементом идёт пустая строка
+    logs_clear = []
+    for key, log in enumerate(logs):
+        try:
+            _, _, _ = log.split(' | ')  # Проверяет формат, нужно, чтобы не вошёл Traceback
+            logs_clear.append(log)
+        except:
+            del logs[key]
+    return render_template('admin/log.html', logs=reversed(logs_clear))
+
+
 @app.route('/work_with_user', methods=['GET', 'POST'])
 @login_required
 def work_with_user():
@@ -64,7 +85,9 @@ def work_with_user():
         user_id = request.form.get('user_id')
         user = User.query.filter_by(id=int(user_id))
         user_list = User.query.get(user_id)
-        flash(f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic} успешно удалён!', category='success')
+        flash(
+            f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic} успешно удалён!',
+            category='success')
         user.delete()
         db.session.commit()
     users = User.query.order_by(User.admin_status.desc()).order_by(User.surname).all()
@@ -131,6 +154,10 @@ def delete_cabinet():
     При GET запросе возвращает страницу на которой необходимо выбрать удаляемый кабинет.
     При POST запросе удаляет выбранный Администратором кабинет
     """
+    if not check_admin_status():
+        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
+        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался создать кабинет: {get_user_info()}")
+        return redirect(url_for('index'))
     if request.method == 'POST':
         if not check_admin_status():
             flash(f'У вас нет прав для просмотра данной страницы!', category='error')

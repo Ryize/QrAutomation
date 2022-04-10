@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Логи - Панель Администратора</title>
+</head>
+
+<style>
+    #admin-panel {
+        background-color: rgb(225, 81, 96);
+        padding-top: 25px;
+        color: white;
+    }
+
+    #panel-admin-div {
+        height: 100px;
+        background-color: rgb(225, 81, 96)
+    }
+</style>
+
+<body>
+
+<style>
+    label{
+        font-size: 115%;
+    }
+</style>
+
+{% include 'template/header_admin.html' %}
+<div id="panel-admin-div" class="text-center">
+    <div class="h-25 d-inline-block" id="admin-panel"><h1>Логи</h1></div>
+</div>
+
+<div class="row" style="max-width: 100%; margin-top: 50px;">
+
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+    <div class="col-xs-4 col-sm-12 col-md-10 col-lg-10" style="background-color: #E0E0E0; padding: 20px; border: 1px solid">
+        {% for log in logs %}
+            {% set date, level, message =  log.split(' | ') %}
+            <p style="margin-top: 30px; margin-bottom: 30px">
+                <label style="color: #FF8C00">{{ date }}</label> &nbsp;|&nbsp;
+                {% if level == 'DEBUG' %}
+                    <label style="color: #00FA9A">{{ level }}</label>
+                {% elif level == 'INFO' %}
+                    <label style="color: #00CED1">{{ level }}</label>
+                {% elif level == 'WARNING' %}
+                    <label style="color: #c2bd60">{{ level }}</label>
+                {% elif level == 'ERROR' %}
+                    <label style="color: #CD5C5C">{{ level }}</label>
+                {% elif level == 'CRITICAL' %}
+                    <label style="color: #8B0000">{{ level }}</label>
+                {% endif %}
+                :&nbsp;&nbsp;&nbsp;&nbsp; <label>{{ message }}</label>
+            </p>
+        <hr>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 50px; margin-bottom: 20px;">
+        <a href="#" style="text-decoration: none; float: right">Скачать</a>
+    </div>
+
+</div>
+<hr>
+<br>
+<footer class="fixed-bottom" style="margin-left: 15px;">
+    <small>© 2022 Матвей Чекашов</small>
+</footer>
+
+</body>
+</html>
