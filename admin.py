@@ -85,6 +85,11 @@ def work_with_user():
         user_id = request.form.get('user_id')
         user = User.query.filter_by(id=int(user_id))
         user_list = User.query.get(user_id)
+        if user.admin_status:  # Администратор не может удалить Администратора
+            app.logger.warning(
+                f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic} попытался удалить Администратора {get_user_info(user)}!')
+            flash('Вы не можете удалить этого пользователя!', category='error')
+            return redirect(url_for('admin_index'))
         flash(
             f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic} успешно удалён!',
             category='success')

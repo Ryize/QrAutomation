@@ -39,7 +39,7 @@
         <td>{{ user.surname }} {{ user.name }} {{ user.patronymic }}</td>
         <td>{{ user.email|default('Пользователь не указал почту!', True) }}</td>
         <td>{{ 'Администратор' if user.admin_status else 'Сотрудник'  }}</td>
-        {% if current_user.admin_status %}
+        {% if current_user.admin_status and not user.admin_status %}
         <td>
             <form action="{{ url_for('work_with_user') }}" method="post" id="deleteForm" onclick="document.getElementById('deleteForm').submit();">
                 <input type="hidden" name="user_id" value="{{ user.id }}">

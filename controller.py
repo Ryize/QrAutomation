@@ -73,26 +73,27 @@ def index():
     """
     search = request.args.get('query')
     schedules = ScheduleCleaning.query.order_by(ScheduleCleaning.created_on.desc()).all()
-    if search:
-        search_list = search.split()
-        if len(search_list) == 1:
-            if search_list[0].isdigit():
-                user = User.query.get(search_list[0])
-            else:
-                user = User.query.filter_by(surname=search_list[0]).first()
+    if not search:
+        return render_template('index.html', schedules=schedules, User=User, Cabinet=Cabinet)
+    search_list = search.split()
+    if len(search_list) == 1:
+        if search_list[0].isdigit():
+            user = User.query.get(search_list[0])
         else:
-            user = User.query.filter_by(surname=search_list[0]).filter_by(name=search_list[1])
-            if len(search_list) == 3:
-                user = user.filter_by(patronymic=search_list[2])
-            user = user.first()
-        if user:
-            schedules = user.user_sc
-            if not schedules:
-                flash('Этот сотрудник не создавал расписаний!', category='error')
-            else:
-                flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
+            user = User.query.filter_by(surname=search_list[0]).first()
+    else:
+        user = User.query.filter_by(surname=search_list[0]).filter_by(name=search_list[1])
+        if len(search_list) == 3:
+            user = user.filter_by(patronymic=search_list[2])
+        user = user.first()
+    if user:
+        schedules = user.user_sc
+        if not schedules:
+            flash('Этот сотрудник не создавал расписаний!', category='error')
         else:
-            flash('Мы не нашли такого сотрудника!', category='error')
+            flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
+    else:
+        flash('Мы не нашли такого сотрудника!', category='error')
     return render_template('index.html', schedules=schedules, User=User, Cabinet=Cabinet)
 
 
