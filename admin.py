@@ -91,7 +91,8 @@ def work_with_user():
             flash('Вы не можете удалить этого пользователя!', category='error')
             return redirect(url_for('admin_index'))
         flash(
-            f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic} успешно удалён!',
+            f'Сотрудник: (id {user_list.id}) {user_list.surname} {user_list.name} {user_list.patronymic}'
+            f' успешно удалён!',
             category='success')
         user.delete()
         db.session.commit()
