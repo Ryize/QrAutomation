@@ -20,7 +20,6 @@
 
 <body>
 {% include 'template/header_admin.html' %}
-{% include 'template/flash.html' %}
 <div id="panel-admin-div" class="text-center">
     <div class="h-25 d-inline-block" id="admin-panel"><h1>Панель Администратора</h1></div>
 </div>
@@ -42,8 +41,8 @@
             <div class="card" style="margin-top: 25px;">
                 <img src="{{ url_for('static', filename='img/admin/Cabinets.jpeg') }}" class="card-img-top" alt="..." height="260">
                 <div class="card-body">
-                    <h5 class="card-title">Кабинеты</h5>
-                    <p class="card-text">За время работы платформы, на неё было добавленно {{ cabinets|length }} кабинетов!</p>
+                    <h5 class="card-title">Кабинеты и расписания</h5>
+                    <p class="card-text">За время работы платформы, на неё было добавленно {{ cabinets|length }} кабинетов и {{ schedules|length }} расписаний!</p>
                 </div>
             </div>
         </center>
@@ -68,7 +67,7 @@
 <hr>
 <br>
 <footer class="fixed-bottom" style="margin-left: 15px;">
-    <small>© 2022 Матвей Чекашов</small>
+    <small>© 2022 <a href="https://vk.com/matvey.chekashov" target="_blank" title="Мой ВК" style="text-decoration: none;">Матвей</a> <a href="https://github.com/Ryize" target="_blank" title="Мой GitHub" style="text-decoration: none;">Чекашов</a></small>
 </footer>
 
 </body>

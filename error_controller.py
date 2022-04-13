@@ -7,7 +7,13 @@ from app import app
 def error404(error):
     return render_template('error/404.html'), 404
 
+
 @app.errorhandler(500)
 def error500(error):
     app.logger.critical(f"Возникла ошибка 500!!!")
     return render_template('error/500.html'), 500
+
+
+@app.errorhandler(503)
+def error503(error):
+    return render_template('error/503.html'), 503

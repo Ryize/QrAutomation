@@ -8,7 +8,6 @@
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body id="body">
-
 {% include 'template/headers.html' %}
 
 <div class="form-check form-switch" id="color_mode">
@@ -23,8 +22,6 @@
 
 <center><h1>Расписание уборок</h1></center>
 <br>
-
-{% include 'template/flash.html' %}
 
 <table class="table table-hover table-bordered">
     <tr>
@@ -45,9 +42,9 @@
         <td>{{ user.surname }} {{ user.name }} {{ user.patronymic }}<label id="id_worker"
                                                                            data-tooltip="Нажмите для детального просмотра"
                                                                            onclick="alert(
-                                                                                   '{{ user.name }} {{ user.surname }} {{ user.patronymic }}, {{ user.email }}' +
+                                                                                   '{{ user.name }} {{ user.surname }} {{ user.patronymic }} {{ user.email }}' +
                                                                                     '')">
-            [{{ user.id }}]
+            [{{ user.id or '-' }}]
         </label>
         </td>
         <td>

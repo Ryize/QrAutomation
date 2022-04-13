@@ -1,17 +1,23 @@
+import flask_monitoringdashboard as dashboard
+import smtplib
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
-from config import DevelopmentConfig, ProductionConfig
+from flask_toastr import Toastr
+
+from flask_maintenance import Maintenance
+
+from flask_debugtoolbar import DebugToolbarExtension
+
+from config import DevelopmentConfig, ProductionConfig, CustomConfig
 
 app = Flask(__name__)
 
-SITE_URL = '127.0.0.1:5000'
-PRODUCTION = False
-
-if PRODUCTION:
+if CustomConfig.PRODUCTION:
     app.config.from_object(ProductionConfig)
 else:
     app.config.from_object(DevelopmentConfig)
@@ -19,6 +25,14 @@ else:
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 migrate_bd = Migrate(app, db)
+toastr = Toastr(app)
+dashboard.bind(app)
+Maintenance(app)
+DebugToolbarExtension(app)
+
+server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+server.login(CustomConfig.MAIL_ADDRESS, CustomConfig.MAIL_PASSWORD)
+
 
 if __name__ == '__main__':
     from controller import app
@@ -27,3 +41,4 @@ if __name__ == '__main__':
 
     app.logger.addHandler(get_logger_handler())
     app.run()
+    server.quit()

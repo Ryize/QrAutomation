@@ -19,8 +19,9 @@ class IUser(ABC):
 class User(db.Model, UserMixin):
     """
     Модель представления пользователя.
-    Пользователь может отмечать уборку в кабинете(class: ScheduleCleaning)
+    Пользователь может отмечать уборку в кабинете(class: ScheduleCleaning).
     """
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64))
     login = db.Column(db.String(64), unique=True)
@@ -42,19 +43,21 @@ class User(db.Model, UserMixin):
 
     def create_login(self) -> str:
         """
-        Установить пользователю логин по имени и фамилии с помощью транслитерации
-        :example: имя=Матвей, фамилия=Чекашов -- будет установлен логин MatveyChekashov
-        :return: строка с логином(str)
+        Установить пользователю логин по имени и фамилии с помощью транслитерации.
+        :example: имя=Матвей, фамилия=Чекашов -- будет установлен логин MatveyChekashov.
+        :return: строка с логином(str).
         """
+
         self.login = self._translate(f'{self.name} {self.surname}')
         return self.login
 
     @staticmethod
     def login_user(username: str, password: str) -> bool:
         """
-        Метод аутентификации и авторизации пользователя с помощью Flask-Login
-        :return: bool(True - пользователь успешно авторизован, False - что-то пошло не так (Неверный пароль и т.п.))
+        Метод аутентификации и авторизации пользователя с помощью Flask-Login.
+        :return: bool(True - пользователь успешно авторизован, False - что-то пошло не так (Неверный пароль и т.п.)).
         """
+
         user = User.query.filter_by(login=username).first()
         if not user:
             user = User.query.filter_by(email=username).first()
@@ -70,10 +73,16 @@ class User(db.Model, UserMixin):
                  auto_login: bool = True) -> IUser:
         """
         Метод регистрации пользователя
-        :param password: str(метод шифрует пароль с помощью werkzeug.security.generate_password_hash)
+        :param username: str(Имя)
+        :param surname: str(Фамилия)
+        :param patronymic: str(Отчество)
+        :param email: str(Почта)
+        :param auto_login: bool(После регистрации автоматически создать логин(User.login))
+        :param password: str(Метод шифрует пароль с помощью werkzeug.security.generate_password_hash)
         :return: Готовый экземпляр класса User(Конкретный пользователь).
-                 Если при регистрации возникла ошибка, кидается исключение ValueError
+                 Если при регистрации возникла ошибка, кидается исключение ValueError.
         """
+
         if not (len(username) < 2 or len(surname) < 2 or len(password) < 4 or password == '1234'):
             password = generate_password_hash(password)
             user = User(name=username, surname=surname, patronymic=patronymic, password=password, email=email)
@@ -87,8 +96,9 @@ class User(db.Model, UserMixin):
     def _translate(self, string: str) -> str:
         """
         Транслитерация строки с русских символов в английские
-        :example: Матвей чекашов -> MatveyChekashov
+        :example: Матвей чекашов -> MatveyChekashov.
         """
+
         if not string or not isinstance(string, str):
             raise ValueError('Для транслитерации необходима исходная строка(str)!')
         string = string.lower()
@@ -110,8 +120,9 @@ class User(db.Model, UserMixin):
 class Cabinet(db.Model):
     """
     Класс описывает помещение, которое убирают.
-    При уборке(class: ScheduleCleaning) передаётся ссылка на конкретный кабинет
+    При уборке(class: ScheduleCleaning) передаётся ссылка на конкретный кабинет.
     """
+
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String(48), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
@@ -124,8 +135,9 @@ class Cabinet(db.Model):
 class ScheduleCleaning(db.Model):
     """
     Чтобы убрать кабинет, пользователь создаёт экземпляр данного класса.
-    Данный класс ссылается на помещение(class: Cabinet) и на пользователя(class: User), которой это помещение убрал
+    Данный класс ссылается на помещение(class: Cabinet) и на пользователя(class: User), которой это помещение убрал.
     """
+
     id = db.Column(db.Integer, primary_key=True)
     cabinet_id = db.Column(db.Integer, db.ForeignKey('cabinet.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -136,7 +148,7 @@ class ScheduleCleaning(db.Model):
         return f'<ScheduleCleaning: {self.id}, {self.created_on}>'
 
 
-db.create_all()
+db.create_all()  # Создаёт таблицы, если ещё не созданы
 
 
 @login_manager.user_loader

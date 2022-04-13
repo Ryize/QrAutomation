@@ -25,9 +25,22 @@
     </style>
 
     <link href="{{ url_for('static', filename='css/headers.css') }}" rel="stylesheet">
+
+    {{ toastr.include_jquery() }}
+    {{ toastr.include_toastr_css() }}
+    {{ toastr.message() }}
 </head>
 
+<style>
+    .toast-error { background-color: rgba(255,111,105,0.7) !important; }
+    .toast-success { background-color: #4aea37 !important; }
+    .toast-warning { background-color: #ffa812 !important; }
+    .toast-info { background-color: #00cca3 !important; }
+    .toast {opacity: 0.92 !important;}
+</style>
+
 <div id="site-head">
+    {{ toastr.include_toastr_js() }}
 
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="bootstrap" viewBox="0 0 118 94">

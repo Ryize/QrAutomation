@@ -42,7 +42,7 @@
     <div class="col-xs-4 col-sm-12 col-md-10 col-lg-10" style="background-color: #E0E0E0; padding: 20px; border: 1px solid">
         {% for log in logs %}
             {% set date, level, message =  log.split(' | ') %}
-            <p style="margin-top: 30px; margin-bottom: 30px">
+            <p style="padding-top: 30px; padding-bottom: 30px">
                 <label style="color: #FF8C00">{{ date }}</label> &nbsp;|&nbsp;
                 {% if level == 'DEBUG' %}
                     <label style="color: #00FA9A">{{ level }}</label>
@@ -59,10 +59,6 @@
             </p>
         <hr>
         {% endfor %}
-    </div>
-
-    <div style="margin-top: 50px; margin-bottom: 20px;">
-        <a href="#" style="text-decoration: none; float: right">Скачать</a>
     </div>
 
 </div>

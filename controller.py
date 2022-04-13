@@ -2,13 +2,31 @@ from datetime import datetime
 
 from flask import render_template, request, flash, url_for, redirect, session
 
-from app import app, db
+from app import app, db, server
+from config import CustomConfig
 from models import User, Cabinet, ScheduleCleaning
 from flask_login import login_required, logout_user
+
+from email.message import EmailMessage
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 from error_controller import *
 
 from werkzeug.wrappers.response import Response
+
+
+def send_mail(to_addrs: list, data: list, html: str):
+    """ Отправить письмо на почту """
+    msg = MIMEMultipart("alternative")
+    msg['Subject'] = data[0]
+    msg['To'] = data[1]
+
+    part1 = MIMEText(html, "html")
+
+    msg.attach(part1)
+
+    server.sendmail(CustomConfig.MAIL_ADDRESS, to_addrs, msg.as_string())
 
 
 def _get_date() -> datetime:
@@ -34,7 +52,7 @@ def _create_schedule(cabinet_id: int) -> Response:
     schedule = ScheduleCleaning(cabinet_id=cabinet_id, user_id=user_id, created_on=created_on)
     db.session.add(schedule)
     db.session.commit()
-    flash(f'Расписание кабинета успешно создано!', category='success')
+    flash(f'Расписание кабинета успешно создано!', 'success')
     print(type(redirect(url_for('index'))))
     return redirect(url_for('index'))
 
@@ -89,11 +107,11 @@ def index():
     if user:
         schedules = user.user_sc
         if not schedules:
-            flash('Этот сотрудник не создавал расписаний!', category='error')
+            flash('Этот сотрудник не создавал расписаний!', 'error')
         else:
-            flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', category='success')
+            flash(f'Найдено {len(schedules)} расписаний по Вашему запросу!', 'success')
     else:
-        flash('Мы не нашли такого сотрудника!', category='error')
+        flash('Мы не нашли такого сотрудника!', 'error')
     return render_template('index.html', schedules=schedules, User=User, Cabinet=Cabinet)
 
 
@@ -110,26 +128,6 @@ def new_schedule():
         return _create_schedule(cabinet_id)
     cabinets = Cabinet.query.order_by(Cabinet.number).all()
     return render_template('new_schedule.html', cabinets=cabinets)
-
-
-@app.route('/delete_schedule', methods=['GET'])
-@login_required
-def delete_schedule():
-    # TODO: Перенести функцию в admin.py
-    """
-    При GET запросе возвращает страницу для удаления расписания.
-    При POST запросе, удаляет выбранное расписани
-    (Запрос на удаление идэт с главной страницы(func index), шаблона(template) функция не имеет)
-    """
-    if not check_admin_status():
-        flash(f'У вас нет прав для просмотра данной страницы!', category='error')
-        app.logger.warning(f"Сотрудник с недостаточным уровнем допуска попытался удалить расписание: {get_user_info()}")
-        return redirect(url_for('index'))
-    schedule_id = request.args.get('schedule_id')
-
-    ScheduleCleaning.query.filter_by(id=schedule_id).delete()
-    db.session.commit()
-    return redirect(url_for('index'))
 
 
 @app.route('/new_schedule/<cabinet_number>', methods=['POST', 'GET'])
@@ -150,22 +148,46 @@ def new_schedule_id(cabinet_number):
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
+    company_code = CustomConfig.COMPANY_SECURE_CODE
     if request.method == 'POST':
         username = request.form.get('username')
         surname = request.form.get('surname')
         patronymic = request.form.get('patronymic')
         email = request.form.get('email')
         password = request.form.get('password')
+        if len(company_code) > 0:
+            if not request.form.get('company_code') in app.config['COMPANY_SECURE_CODE']:
+                flash('Неверный код компании!')
+                return redirect(url_for('register'))
         try:
             user = User.register(username=username, surname=surname, patronymic=patronymic, email=email,
                                  password=password)
-            flash('Вы успешно зарегистрировались!', category='success')
+            if email:
+                REGISTER_HTML_TEMPLATE = f"""
+                                <html>
+                                  <body>
+                                    <center><h1 style='font-size: 125%;'>Привет!</h1><br></center>
+                                       <p style='font-size: 125%;'>Если вы получили это сообщение, значит вы зарегестрировались на нашей платформе.</p>
+                                       <p style='font-size: 125%;'>Ваши данные для входа: </p>
+                                       <li style='font-size: 125%;'>id: {user.id}</li>
+                                       <li style='font-size: 125%;'>Логин: {user.login}</li>
+                                       <li style='font-size: 125%;'>Почта: {email}</li>
+                                       <li style='font-size: 125%;'>Пароль: {password}</li>
+                                    </p>
+                                    <br>
+                                    <hr>
+                                    <label>Хорошего дня!</label>
+                                  </body>
+                                </html>
+                                """
+                send_mail(email, ['Данные для входа в аккаунт', 'Сервис'], REGISTER_HTML_TEMPLATE)
+            flash('Вы упешно зарегестрировались, данные отправлены на почту!', 'success')
             app.logger.info(f"Зарегестрирован новый аккаунт: {get_user_info(user)}.")
             return redirect(url_for('index'))
         except ValueError:
-            flash('Ошибка регистрации!', category='error')
+            flash('Ошибка регистрации!', 'error')
 
-    return render_template('auth/register.html', all_user=User.query.all())
+    return render_template('auth/register.html', all_user=User.query.all(), iscompanycode=bool(company_code))
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -174,9 +196,10 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         if User.login_user(username=username, password=password):
+            flash('Вы успешно авторизовались!')
             return redirect(url_for('index'))
         else:
-            flash('Ошибка авторизации!', category='error')
+            flash('Ошибка авторизации!', 'error')
 
     return render_template('auth/login.html')
 
