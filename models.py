@@ -111,6 +111,7 @@ class User(db.Model, UserMixin):
         return translate_string
 
     def login(self):
+        """ Без этого метода не работает. """
         pass
 
     def __repr__(self):

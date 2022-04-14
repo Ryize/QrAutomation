@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List
 
 
@@ -40,5 +41,5 @@ class CustomConfig:
     SITE_URL: str = '127.0.0.1:5000'
     PRODUCTION: bool = True
     COMPANY_SECURE_CODE: List[str] = []  # Если кода нет, оставьте пустые скобочки []
-    MAIL_ADDRESS = 'chekashovmatvey@gmail.com'  # Только gmail, если не работает, ознакомьтесь с паролями приложений
-    MAIL_PASSWORD = 'aqimcioeliirpbjb'
+    MAIL_ADDRESS = os.getenv('MAIL_ADDRESS')  # Только gmail, если не работает, ознакомьтесь с паролями приложений
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
