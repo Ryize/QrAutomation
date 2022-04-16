@@ -13,14 +13,18 @@
 
 ## Deploy locally:
 
+> Установите Python(Если не установлен)<br>
+> [Download Python3](https://www.python.org/downloads/)
+
 Клонируйте этот репозиторий и перейдите в папку с проектом:
 ```
 git clone https://github.com/Ryize/qrAutomation.git
 cd qrAutomation
 ```
 
-Установить зависимости:
+Создайте виртуальное окружение. Установить зависимости:
 ```
+python3 -m venv venv & source venv/bin/activate
 pip3 install -r requirements.txt
 ```
 > Перейдите в файл config.py и настройте конфиг CustomConfig(При необходимости и другие)
