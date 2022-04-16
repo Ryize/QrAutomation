@@ -15,6 +15,7 @@
 
 > Установите Python(Если не установлен)<br>
 > [Download Python3](https://www.python.org/downloads/)
+<br>
 
 Клонируйте этот репозиторий и перейдите в папку с проектом:
 ```
